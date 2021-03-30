@@ -8,4 +8,4 @@ const createUser = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports = { createUser };
+module.exports = createUser;

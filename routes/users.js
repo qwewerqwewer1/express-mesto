@@ -1,6 +1,6 @@
-const userRouter = require('express').Router;
+const router = require('express').Router();
 const createUser = require('../controllers/users');
 
-userRouter.post('/user', createUser); // mancraft   p.s. the game))
+router.post('/user', createUser); // mancraft   p.s. the game))
 
-module.exports = userRouter;
+module.exports = { router };

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 // const bodyParser = require('body-parser');
 
-const userRouter = require('./routes/users');
+const { router } = require('./routes/users');
 
 const { PORT = 3000, BASE_PATH } = process.env;
 
@@ -19,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use('/', userRouter);
+app.use('/', router);
 
 app.listen(BASE_PATH, () => {
   // eslint-disable-next-line no-console
