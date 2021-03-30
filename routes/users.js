@@ -1,6 +1,10 @@
 const router = require('express').Router();
-const createUser = require('../controllers/users');
+const { createUser, getUserById, getUsers } = require('../controllers/users');
 
-router.post('/user', createUser); // mancraft   p.s. the game))
+router.get('/', getUsers);
 
-module.exports = { router };
+router.get('/:userId', getUserById);
+
+router.post('/', createUser);
+
+module.exports = router;

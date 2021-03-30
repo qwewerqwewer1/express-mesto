@@ -5,15 +5,15 @@ const cardSchema = new mongoose.Schema({
     type: String,
     maxLength: 30,
     minLenght: 2,
-    reuired: true,
+    required: [true, 'Название карточки'],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'Ссылка на карточку'],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true,
+    required: true,
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,

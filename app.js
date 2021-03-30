@@ -1,17 +1,17 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
 
-// const bodyParser = require('body-parser');
-
-const { router } = require('./routes/users');
-
-const { PORT = 3000, BASE_PATH } = process.env;
+const { PORT = 3000 } = process.env;
+const path = require('path');
 
 const app = express();
+const bodyParser = require('body-parser');
+const router = require('./routes');
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -19,9 +19,13 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use('/', router);
+app.get('/', (req, res) => {
+  res.send(req.method);
+});
 
-app.listen(BASE_PATH, () => {
+app.use(router);
+
+app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Work on ${PORT} port`);
 });
