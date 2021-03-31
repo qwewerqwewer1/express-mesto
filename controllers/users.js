@@ -9,13 +9,15 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   const { id } = req.params;
   UserSchema.findById(id)
-    .then((user) => {
-      if (!user) {
-        return (() => res.status(404).send({ message: 'Пользователь не найден!' }));
+    .orFail(new Error('NotFound'))
+    .then((user) => res.send(user))
+    .catch((error) => {
+      if (error.message === 'NotFound') {
+        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+      } else {
+        res.status(500).send({ message: error.message });
       }
-      res.send(user);
-    })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка на стророне сервера' }));
+    });
 };
 
 const createUser = (req, res) => {
@@ -40,7 +42,7 @@ const updateInfoUser = (req, res) => {
     runValidators: true,
   })
     .then((newUser) => res.status(200).send({ data: newUser }))
-    .catch((error) => res.status(404).send({ message: error.message }));
+    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' }));
 };
 
 const updateAvatarUser = (req, res) => {

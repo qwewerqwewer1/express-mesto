@@ -3,7 +3,7 @@ const CardSchema = require('../models/card');
 const getCards = (req, res) => {
   CardSchema.find({})
     .then((cardData) => res.send(cardData))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка на стророне сервера' }));
+    .catch((err) => res.status(500).send(err.message));
 };
 
 const postCard = (req, res) => {
@@ -15,7 +15,7 @@ const postCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка на стророне сервера' });
+        res.status(500).send({ message: err.message });
       }
     });
 };
