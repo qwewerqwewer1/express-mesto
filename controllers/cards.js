@@ -36,8 +36,7 @@ const getCardById = (req, res) => {
         res.status(500).send({ message: err.message });
       }
     });
-}; // мсье ревьюер, я не исправил в 1 раз, потому что понятия
-// не имел что такое CastError, но потом выяснил у наставника
+};
 
 const setLike = (req, res) => {
   CardSchema.findByIdAndUpdate(
@@ -68,12 +67,18 @@ const removeLike = (req, res) => {
   )
     .then((dataLike) => {
       if (!dataLike) {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        res.status(404).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else {
         res.status(200).send({ data: dataLike });
       }
     })
-    .catch((err) => { res.status(500).send({ message: err.message }); });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Данные неверного формата' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports = {

@@ -11,11 +11,15 @@ const getUserById = (req, res) => {
   UserSchema.findById(id)
     .orFail(new Error('NotFound'))
     .then((user) => res.send(user))
-    .catch((error) => {
-      if (error.message === 'NotFound') {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      } else if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный формат данных' });
       } else {
-        res.status(500).send({ message: error.message });
+        res.status(500).send({ message: err.message });
       }
     });
 };
@@ -29,7 +33,7 @@ const createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка на стороне сервера' });
+        res.status(500).send({ message: err.message });
       }
     });
 };
@@ -48,6 +52,8 @@ const updateInfoUser = (req, res) => {
         res.status(404).send({ message: 'Нет пользователя с таким id' });
       } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный формат данных' });
       } else {
         res.status(500).send({ message: err.message });
       }
@@ -68,6 +74,8 @@ const updateAvatarUser = (req, res) => {
         res.status(404).send({ message: 'Нет пользователя с таким id' });
       } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный формат данных' });
       } else {
         res.status(500).send({ message: err.message });
       }
