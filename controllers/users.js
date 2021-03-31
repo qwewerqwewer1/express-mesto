@@ -41,8 +41,17 @@ const updateInfoUser = (req, res) => {
     new: true,
     runValidators: true,
   })
-    .then((newUser) => res.status(200).send({ data: newUser }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' }));
+    .orFail(new Error('NotFound'))
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      } else if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 const updateAvatarUser = (req, res) => {
@@ -52,8 +61,17 @@ const updateAvatarUser = (req, res) => {
     new: true,
     runValidators: true,
   })
-    .then((newAvatar) => res.status(200).send({ data: newAvatar }))
-    .catch((error) => res.status(404).send({ message: error.message }));
+    .orFail(new Error('NotFound'))
+    .then((newAvatar) => res.send({ data: newAvatar }))
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      } else if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports = {

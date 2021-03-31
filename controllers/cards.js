@@ -22,8 +22,14 @@ const postCard = (req, res) => {
 
 const getCardById = (req, res) => {
   CardSchema.findByIdAndDelete(req.params.cardId)
-    .then((dataCard) => res.send({ data: dataCard }))
-    .catch((error) => res.status(404).send(error.message));
+    .then((dataCard) => {
+      if (!dataCard) {
+        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+      } else {
+        res.status(200).send({ data: dataCard });
+      }
+    })
+    .catch((error) => res.status(500).send(error.message));
 };
 
 const setLike = (req, res) => {
@@ -32,8 +38,14 @@ const setLike = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((likes) => res.send({ data: likes }))
-    .catch(() => { res.status(404).send({ message: 'Нет карточки с таким id' }); });
+    .then((dataLike) => {
+      if (!dataLike) {
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+      } else {
+        res.status(200).send({ data: dataLike });
+      }
+    })
+    .catch((err) => { res.status(500).send({ message: err.message }); });
 };
 
 const removeLike = (req, res) => {
@@ -42,8 +54,14 @@ const removeLike = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((likes) => res.send({ data: likes }))
-    .catch(() => { res.status(404).send({ message: 'Нет карточки с таким id' }); });
+    .then((dataLike) => {
+      if (!dataLike) {
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+      } else {
+        res.status(200).send({ data: dataLike });
+      }
+    })
+    .catch((err) => { res.status(500).send({ message: err.message }); });
 };
 
 module.exports = {
