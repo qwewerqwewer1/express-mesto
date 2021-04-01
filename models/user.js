@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     minLength: [2, 'Имя не может состоять только из одной буквы'],
     maxLength: [30, 'Данные строки не могут превышать более 30 символов'],
     validate: {
-      validator: (v) => /[А-ЯЁ][а-яё]+/.test(v), // Спасибо вебинару Артема Евсякова, как то тепло на душе стало ♥
+      validator: (v) => /[А-ЯЁ][а-яё]+/.test(v), // Спасибо вебинару Артема Евсякова
       message: 'Имя доллжно быть на русском языке и начинаться с Большой буквы',
     },
   },
@@ -24,3 +24,5 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('user', userSchema);
+
+fsdfasdfasdf
