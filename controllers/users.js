@@ -14,8 +14,6 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(404).send({ message: 'Нет пользователя с таким id' });
-      } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Неверный формат данных' });
       } else {
