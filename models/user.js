@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    validate: {
+      validator: (v) => /^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i.test(v),
+      message: 'Имя доллжно быть на русском языке и начинаться с Большой буквы',
+    },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
@@ -36,7 +40,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Минимум 8 символов'],
-    minlength: 8,
+    validate: {
+      validator: (v) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/.test(v),
+    },
     select: false,
   },
 });

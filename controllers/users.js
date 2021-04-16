@@ -8,7 +8,7 @@ const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
 const getProfile = (req, res, next) => {
-  UserSchema.findOne({ _id: req.params._id })
+  UserSchema.findOne({ _id: req.users._id })
     .then((user) => {
       if (!user) {
         throw (new NotFoundError('Пользователь отсутствует'));
@@ -17,7 +17,7 @@ const getProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Невалидный id');
+        next(new BadRequestError('Невалидный id'));
       } else {
         next(err);
       }
@@ -52,7 +52,13 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
+  try {
+    if (password.length < 8) {
+      throw new BadRequestError('Минимум 8 символов');
+    }
+  } catch (err) {
+    next(err);
+  }
   bcrypt.hash(password, 10)
     .then((hash) => UserSchema.create({
       name,
@@ -124,12 +130,12 @@ const login = (req, res, next) => {
 
   return UserSchema.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }); // Пейлоуд токена — зашифрованный в строку объект пользователя
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
-      }).send({ message: 'Успешная авторизация' });
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.send({ token });
     })
     .catch((err) => {
       if (err.message === 'Unauthorized') {
