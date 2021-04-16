@@ -1,44 +1,46 @@
 const CardSchema = require('../models/card');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   CardSchema.find({})
     .then((cardData) => res.send(cardData))
-    .catch((err) => res.status(500).send(err.message));
+    .catch(next);
 };
 
-const postCard = (req, res) => {
+const postCard = (req, res, next) => {
   const { name, link } = req.body;
 
   CardSchema.create({ name, link, owner: req.user._id })
     .then((dataCard) => res.send({ data: dataCard }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` });
+        next(new BadRequestError('Данные некорректны!'));
       } else {
-        res.status(500).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const getCardById = (req, res) => {
+const getCardById = (req, res, next) => {
   CardSchema.findByIdAndDelete(req.params.cardId)
     .then((dataCard) => {
       if (!dataCard) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
-      } else {
-        res.status(200).send({ data: dataCard });
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
+      } else if (dataCard.owner._id.toString() === req.user._id) {
+        res.status(200).send({ message: 'Карточка удалена!' });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Данные неверного формата' });
+        next(new BadRequestError('Данные некорректны!'));
       } else {
-        res.status(500).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const setLike = (req, res) => {
+const setLike = (req, res, next) => {
   CardSchema.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -46,20 +48,20 @@ const setLike = (req, res) => {
   )
     .then((dataLike) => {
       if (!dataLike) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       } else {
         res.status(200).send({ data: dataLike });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Данные неверного формата' });
+        next(new BadRequestError('Данные некорректны!'));
       } else {
-        res.status(500).send({ message: err.message });
+        next(err);
       }
     });
 };
-const removeLike = (req, res) => {
+const removeLike = (req, res, next) => {
   CardSchema.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -67,16 +69,16 @@ const removeLike = (req, res) => {
   )
     .then((dataLike) => {
       if (!dataLike) {
-        res.status(404).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        throw (new BadRequestError('Данные некорректны!'));
       } else {
         res.status(200).send({ data: dataLike });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Данные неверного формата' });
+        next(new BadRequestError('Данные некорректны!'));
       } else {
-        res.status(500).send({ message: err.message });
+        next(err);
       }
     });
 };
