@@ -2,13 +2,13 @@ const CardSchema = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 
-const getCards = (req, res, next) => {
+module.exports.getCards = (req, res, next) => {
   CardSchema.find({})
     .then((cardData) => res.send(cardData))
     .catch(next);
 };
 
-const postCard = (req, res, next) => {
+module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
 
   CardSchema.create({ name, link, owner: req.user._id })
@@ -22,7 +22,7 @@ const postCard = (req, res, next) => {
     });
 };
 
-const getCardById = (req, res, next) => {
+module.exports.getCardById = (req, res, next) => {
   CardSchema.findByIdAndDelete(req.params.cardId)
     .then((dataCard) => {
       if (!dataCard) {
@@ -40,7 +40,7 @@ const getCardById = (req, res, next) => {
     });
 };
 
-const setLike = (req, res, next) => {
+module.exports.setLike = (req, res, next) => {
   CardSchema.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -61,7 +61,7 @@ const setLike = (req, res, next) => {
       }
     });
 };
-const removeLike = (req, res, next) => {
+module.exports.removeLike = (req, res, next) => {
   CardSchema.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -81,8 +81,4 @@ const removeLike = (req, res, next) => {
         next(err);
       }
     });
-};
-
-module.exports = {
-  getCards, getCardById, postCard, setLike, removeLike,
 };

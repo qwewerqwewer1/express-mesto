@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new UnauthorizedError('Авторизуйтесь!!');
+    throw new UnauthorizedError('Авторизуйтесь!');
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -17,7 +17,8 @@ module.exports = (req, res, next) => {
   } catch (err) {
     throw new UnauthorizedError('Авторизуйтесь!');
   }
-  req.user = payload; // записываем пейлоуд в объект запроса
+  req.users = payload; // записываем пейлоуд в объект запроса
+  console.log(req.users);
 
   next(); // пропускаем запрос дальше
 };

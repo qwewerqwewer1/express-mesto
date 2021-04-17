@@ -1,17 +1,44 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const validator = require('validator');
 const UserSchema = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
-const getProfile = (req, res, next) => {
+module.exports.getProfile = (req, res, next) => {
   UserSchema.findOne({ _id: req.users._id })
+    // eslint-disable-next-line no-undef
+    .then((user) = console.log(user))
+    .then((user) => {
+      // eslint-disable-next-line no-console
+      console.log(req.user);
+      if (!user) {
+        throw (new NotFoundError(`Пользователь отсутствует с емайлом ${user}`));
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Невалидный id'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+module.exports.getUsers = (req, res, next) => {
+  UserSchema.find({})
+    .then((userData) => res.send(userData))
+    .catch(next);
+};
+
+module.exports.getUserById = (req, res, next) => {
+  const { id } = req.params;
+  UserSchema.findById(id)
     .then((user) => {
       if (!user) {
-        throw (new NotFoundError('Пользователь отсутствует'));
+        throw new NotFoundError('Пользователь отсутствует');
       }
       res.send(user);
     })
@@ -24,31 +51,7 @@ const getProfile = (req, res, next) => {
     });
 };
 
-const getUsers = (req, res, next) => {
-  UserSchema.find({})
-    .then((userData) => res.send(userData))
-    .catch(next);
-};
-
-const getUserById = (req, res, next) => {
-  const { id } = req.params;
-  UserSchema.findById(id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь отсутствует');
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Невалидный id');
-      } else {
-        next(err);
-      }
-    });
-};
-
-const createUser = (req, res, next) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -67,7 +70,7 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(201).send({ data: user.toJSON() }))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Переданы невалидные данные'));
@@ -79,7 +82,7 @@ const createUser = (req, res, next) => {
     });
 };
 
-const updateInfoUser = (req, res, next) => {
+module.exports.updateInfoUser = (req, res, next) => {
   const { name, about } = req.body;
 
   UserSchema.findByIdAndUpdate(req.user._id, { name, about }, {
@@ -102,7 +105,7 @@ const updateInfoUser = (req, res, next) => {
     });
 };
 
-const updateAvatarUser = (req, res, next) => {
+module.exports.updateAvatarUser = (req, res, next) => {
   const { avatar } = req.body;
 
   UserSchema.findByIdAndUpdate(req.user._id, { avatar }, {
@@ -125,7 +128,7 @@ const updateAvatarUser = (req, res, next) => {
     });
 };
 
-const login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return UserSchema.findUserByCredentials(email, password)
@@ -144,8 +147,4 @@ const login = (req, res, next) => {
         next(err);
       }
     });
-};
-
-module.exports = {
-  getProfile, getUsers, getUserById, createUser, updateInfoUser, updateAvatarUser, login,
 };
