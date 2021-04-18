@@ -41,10 +41,10 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 // ROUTES ↓
 app.use(auth);
-// ROUTES ↓
-app.use(router);
 // NOT FOUND ROUTES*
 app.use('*', router);
+// ROUTES ↓
+app.use(router);
 // NPM CELEBRATE LIBRARY
 app.use(errors());
 // ERROR-HANDLER!!!
