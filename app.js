@@ -7,6 +7,17 @@ const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 // NPM BODYPARSER
 const bodyParser = require('body-parser');
+// NPM CELEBRATE LIBRARY
+const { errors } = require('celebrate');
+// NPM ANTI-DDOS
+const rateLimit = require('express-rate-limit');
+// NPM ANTI-DDOS ↓
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+// NPM HELMET
+const helmet = require('helmet');
 // ROUTES
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -21,6 +32,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 // NPM BODYPARSER ↓
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// NPM ANTI-DDOS ↓
+app.use(limiter);
+// NPM HELMET ↓
+app.use(helmet());
 // ROUTES ↓
 app.post('/signin', login);
 app.post('/signup', createUser);
@@ -30,6 +45,8 @@ app.use(auth);
 app.use(router);
 // NOT FOUND ROUTES*
 app.use('*', router);
+// NPM CELEBRATE LIBRARY
+app.use(errors());
 // ERROR-HANDLER!!!
 app.use(errorHandler);
 // SERVER'S__LISTENER

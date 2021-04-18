@@ -23,12 +23,17 @@ module.exports.postCard = (req, res, next) => {
 };
 
 module.exports.getCardById = (req, res, next) => {
-  CardSchema.findByIdAndDelete(req.params.cardId)
+  // Я не знаю почему, но метод findByIdAndDelete при удалении чужой карты
+  // сначала писал who are you human?, а потом если просто еще разок попробывал
+  // удалить чужую карту, то удалял! Такая штука только при 2-х нажатиях пордяд на DELETE
+  CardSchema.findById(req.params.cardId)
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
     .then((dataCard) => {
-      if (!dataCard) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else if (dataCard.owner._id.toString() === req.user._id) {
+      if (dataCard.owner._id.toString() === req.user._id) {
+        dataCard.delete();
         res.status(200).send({ message: 'Карточка удалена!' });
+      } else {
+        res.status(418).send({ message: 'who are you human?' });
       }
     })
     .catch((err) => {
@@ -46,13 +51,8 @@ module.exports.setLike = (req, res, next) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((dataLike) => {
-      if (!dataLike) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else {
-        res.status(200).send({ data: dataLike });
-      }
-    })
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
+    .then((dataLike) => res.status(200).send({ data: dataLike }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные некорректны!'));
@@ -67,13 +67,8 @@ module.exports.removeLike = (req, res, next) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((dataLike) => {
-      if (!dataLike) {
-        throw (new BadRequestError('Данные некорректны!'));
-      } else {
-        res.status(200).send({ data: dataLike });
-      }
-    })
+    .orFail(new BadRequestError('Данные некорректны!'))
+    .then((dataLike) => res.status(200).send({ data: dataLike }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные некорректны!'));

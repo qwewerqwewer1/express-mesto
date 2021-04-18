@@ -4,7 +4,7 @@ module.exports.errorHandler = ((err, req, res, next) => {
     .status(statusCode)
     .send({
       message: statusCode === 500
-        ? 'На сервере произошла ошибка'
+        ? `На сервере произошла ошибка ${req.user}`
         : message,
     });
   next();

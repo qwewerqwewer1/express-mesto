@@ -1,3 +1,4 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserSchema = require('../models/user');
@@ -7,17 +8,9 @@ const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
 module.exports.getProfile = (req, res, next) => {
-  UserSchema.findOne({ _id: req.users._id })
-    // eslint-disable-next-line no-undef
-    .then((user) = console.log(user))
-    .then((user) => {
-      // eslint-disable-next-line no-console
-      console.log(req.user);
-      if (!user) {
-        throw (new NotFoundError(`Пользователь отсутствует с емайлом ${user}`));
-      }
-      res.send({ data: user });
-    })
+  UserSchema.findOne({ _id: req.user._id })
+    .orFail(new NotFoundError('Пользователь отсутствует в базе'))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Невалидный id'));
@@ -36,12 +29,8 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   const { id } = req.params;
   UserSchema.findById(id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь отсутствует');
-      }
-      res.send(user);
-    })
+    .orFail(new NotFoundError('Пользователь отсутствует в базе'))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Невалидный id'));
@@ -84,18 +73,12 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.updateInfoUser = (req, res, next) => {
   const { name, about } = req.body;
-
   UserSchema.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь отсутствует');
-      } else {
-        res.send({ data: user });
-      }
-    })
+    .orFail(new NotFoundError('Пользователь отсутствует в базе'))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Переданы невалидные данные'));
@@ -112,13 +95,8 @@ module.exports.updateAvatarUser = (req, res, next) => {
     new: true,
     runValidators: true,
   })
-    .then((newAvatar) => {
-      if (!newAvatar) {
-        throw (new NotFoundError('Пользователь отсутствует'));
-      } else {
-        res.send({ data: newAvatar });
-      }
-    })
+    .orFail(new NotFoundError('Пользователь отсутствует в базе'))
+    .then((newAvatar) => res.send({ data: newAvatar }))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Данные некоректны'));
@@ -135,7 +113,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'some-secret-key',
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
         { expiresIn: '7d' },
       );
       res.send({ token });
