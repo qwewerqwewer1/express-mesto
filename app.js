@@ -47,10 +47,10 @@ app.post('/signup', createUser);
 app.use(errorLogger);
 // ROUTES ↓
 app.use(auth);
-// NOT FOUND ROUTES*
-app.use('*', router);
 // ROUTES ↓
 app.use(router);
+// NOT FOUND ROUTES*
+app.use('*', router);
 // NPM CELEBRATE LIBRARY ↓
 app.use(errors());
 // ERROR-HANDLER!!!
