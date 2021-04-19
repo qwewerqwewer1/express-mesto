@@ -23,6 +23,8 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const router = require('./routes');
 const { errorHandler } = require('./middlewares/error-handler');
+// NPM WINSTON {Loggers}
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 // DATABASE MONGO ↓
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -36,16 +38,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(limiter);
 // NPM HELMET ↓
 app.use(helmet());
+// NPM WINSTON {requestLogger} ↓
+app.use(requestLogger);
 // ROUTES ↓
 app.post('/signin', login);
 app.post('/signup', createUser);
+// NPM WINSTON {errorLogger} ↑
+app.use(errorLogger);
 // ROUTES ↓
 app.use(auth);
 // NOT FOUND ROUTES*
 app.use('*', router);
 // ROUTES ↓
 app.use(router);
-// NPM CELEBRATE LIBRARY
+// NPM CELEBRATE LIBRARY ↓
 app.use(errors());
 // ERROR-HANDLER!!!
 app.use(errorHandler);
