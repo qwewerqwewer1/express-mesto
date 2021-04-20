@@ -8,7 +8,7 @@ router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
 router.use('*', (req, res, next) => {
-  next(new NotFoundError('Запрашиваемый адрес отсутствует, укажите существующий путь!'));
+  next(new NotFoundError('Запрашиваемый адрес отсутствует, укажите существующий путь!!!'));
 });
 
 module.exports = router;

@@ -43,14 +43,14 @@ app.use(requestLogger);
 // ROUTES ↓
 app.post('/signin', login);
 app.post('/signup', createUser);
-// NPM WINSTON {errorLogger} ↑
-app.use(errorLogger);
 // ROUTES ↓
 app.use(auth);
 // ROUTES ↓
 app.use(router);
 // NOT FOUND ROUTES*
 app.use('*', router);
+// NPM WINSTON {errorLogger} ↑
+app.use(errorLogger);
 // NPM CELEBRATE LIBRARY ↓
 app.use(errors());
 // ERROR-HANDLER!!!
