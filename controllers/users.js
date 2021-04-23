@@ -116,6 +116,8 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
         { expiresIn: '7d' },
       );
+      // eslint-disable-next-line no-console
+      console.log(token);
       res.send({ token });
     })
     .catch((err) => {

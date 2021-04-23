@@ -18,6 +18,8 @@ const limiter = rateLimit({
 });
 // NPM HELMET
 const helmet = require('helmet');
+// NPM CORS
+const cors = require('cors');
 // ROUTES
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -25,12 +27,18 @@ const router = require('./routes');
 const { errorHandler } = require('./middlewares/error-handler');
 // NPM WINSTON {Loggers}
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 // DATABASE MONGO ↓
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
+// NPM CORS ↓
+app.use(cors({
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200,
+}));
 // NPM BODYPARSER ↓
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -40,6 +48,13 @@ app.use(limiter);
 app.use(helmet());
 // NPM WINSTON {requestLogger} ↓
 app.use(requestLogger);
+// CRASH-TEST for REVIEWERS
+// app.get('/crash-test', () => {
+//   setTimeout(() => {
+//     throw new Error('Сервер сейчас упадёт');
+//   }, 0);
+// });
+
 // ROUTES ↓
 app.post('/signin', login);
 app.post('/signup', createUser);
