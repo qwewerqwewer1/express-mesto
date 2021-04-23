@@ -19,7 +19,7 @@ const limiter = rateLimit({
 // NPM HELMET
 const helmet = require('helmet');
 // NPM CORS
-const cors = require('cors');
+// const cors = require('cors');
 // ROUTES
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -35,10 +35,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 // NPM CORS ↓
-app.use(cors({
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200,
-}));
+// app.use(cors({
+//   origin: 'https://black-box.nomoredomains.monster',
+//   optionsSuccessStatus: 200,
+// }));
 // NPM BODYPARSER ↓
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
