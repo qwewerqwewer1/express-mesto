@@ -7,10 +7,11 @@ const cors = require('cors');
 // SERVER'S FRAMEWORK ↓
 const app = express();
 // NPM CORS ↓
-app.use(cors({
-  origin: 'https://black-box.nomoredomains.monster',
-  optionsSuccessStatus: 200,
-}));
+// {
+//   origin: 'https://black-box.nomoredomains.monster',
+//   optionsSuccessStatus: 200,
+// } ↓
+app.use(cors());
 const { PORT = 3000 } = process.env;
 // DATABASE MONGO
 const mongoose = require('mongoose');
