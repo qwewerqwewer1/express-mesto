@@ -1,7 +1,15 @@
 // SERVER'S FRAMEWORK
 const express = require('express');
+// NPM CORS
+const cors = require('cors');
 // SERVER'S FRAMEWORK ↓
 const app = express();
+// NPM CORS ↓
+app.use(cors());
+// ↑ {
+//   origin: 'https://black-box.nomoredomains.monster',
+//   optionsSuccessStatus: 200,
+// }
 const { PORT = 3000 } = process.env;
 // DATABASE MONGO
 const mongoose = require('mongoose');
@@ -10,16 +18,14 @@ const bodyParser = require('body-parser');
 // NPM CELEBRATE LIBRARY
 const { errors } = require('celebrate');
 // NPM ANTI-DDOS
-const rateLimit = require('express-rate-limit');
+// const rateLimit = require('express-rate-limit');
 // NPM ANTI-DDOS ↓
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
+// const limiter = rateLimit({
+//  windowMs: 15 * 60 * 1000, // 15 minutes
+//  max: 100, // limit each IP to 100 requests per windowMs
+// });
 // NPM HELMET
 const helmet = require('helmet');
-// NPM CORS
-// const cors = require('cors');
 // ROUTES
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -34,16 +40,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
-// NPM CORS ↓
-// app.use(cors({
-//   origin: 'https://black-box.nomoredomains.monster',
-//   optionsSuccessStatus: 200,
-// }));
+
 // NPM BODYPARSER ↓
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // NPM ANTI-DDOS ↓
-app.use(limiter);
+// app.use(limiter);
 // NPM HELMET ↓
 app.use(helmet());
 // NPM WINSTON {requestLogger} ↓

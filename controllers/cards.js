@@ -12,7 +12,7 @@ module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
 
   CardSchema.create({ name, link, owner: req.user._id })
-    .then((dataCard) => res.send({ data: dataCard }))
+    .then((dataCard) => res.send(dataCard))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Данные некорректны!'));
@@ -52,7 +52,7 @@ module.exports.setLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
-    .then((dataLike) => res.status(200).send({ data: dataLike }))
+    .then((dataLike) => res.status(200).send(dataLike))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные некорректны!'));
@@ -68,7 +68,7 @@ module.exports.removeLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new BadRequestError('Данные некорректны!'))
-    .then((dataLike) => res.status(200).send({ data: dataLike }))
+    .then((dataLike) => res.status(200).send({ dataLike }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные некорректны!'));

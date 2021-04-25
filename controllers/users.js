@@ -10,7 +10,7 @@ const UnauthorizedError = require('../errors/unauthorized-error');
 module.exports.getProfile = (req, res, next) => {
   UserSchema.findOne({ _id: req.user._id })
     .orFail(new NotFoundError('Пользователь отсутствует в базе'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Невалидный id'));
@@ -59,7 +59,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({ data: user.toJSON() }))
+    .then((user) => res.status(201).send(user.toJSON()))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Переданы невалидные данные'));
@@ -78,7 +78,7 @@ module.exports.updateInfoUser = (req, res, next) => {
     runValidators: true,
   })
     .orFail(new NotFoundError('Пользователь отсутствует в базе'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Переданы невалидные данные'));
@@ -96,7 +96,7 @@ module.exports.updateAvatarUser = (req, res, next) => {
     runValidators: true,
   })
     .orFail(new NotFoundError('Пользователь отсутствует в базе'))
-    .then((newAvatar) => res.send({ data: newAvatar }))
+    .then((newAvatar) => res.send(newAvatar))
     .catch((err) => {
       if (err.name === ('ValidationError' || 'CastError')) {
         next(new BadRequestError('Данные некоректны'));
@@ -117,7 +117,6 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       // eslint-disable-next-line no-console
-      console.log(token);
       res.send({ token });
     })
     .catch((err) => {
