@@ -68,7 +68,7 @@ module.exports.removeLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new BadRequestError('Данные некорректны!'))
-    .then((dataLike) => res.status(200).send({ dataLike }))
+    .then((dataLike) => res.status(200).send(dataLike))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Данные некорректны!'));
