@@ -1,0 +1,10 @@
+git add .
+git commit -m 'new changes'
+git push
+
+ssh kovyazinaa11@130.193.55.95
+cd express-mesto
+git pull
+sudo reboot
+
+ssh kovyazinaa11@130.193.55.95 - again to check

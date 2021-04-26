@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {
   // eslint-disable-next-line max-len
   validateGetUsers, validateGetProfile, validateGetUserById, validateUpdateInfoUser, validateUpdateAvatarUser,
-} = require('../middlewares/validatons');
+} = require('../middlewares/validations');
 
 const {
   getUserById, getUsers, updateInfoUser, updateAvatarUser, getProfile,

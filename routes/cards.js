@@ -5,7 +5,7 @@ const {
   validatePostCard,
   validateSetLike,
   validateRemoveLike,
-} = require('../middlewares/validatons');
+} = require('../middlewares/validations');
 
 const {
   getCards, getCardById, postCard, setLike, removeLike,

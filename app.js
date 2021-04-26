@@ -37,9 +37,7 @@ const { errorHandler } = require('./middlewares/error-handler');
 // NPM WINSTON {Loggers}
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 // VALIDATIONS
-const {
-  validateSignIn, validateSignUp,
-} = require('../middlewares/validatons');
+const { validateSignIn, validateSignUp } = require('./middlewares/validations');
 // DATABASE MONGO ↓
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
