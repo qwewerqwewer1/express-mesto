@@ -8,10 +8,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     minLength: [2, 'Имя не может состоять только из одной буквы'],
     maxLength: [30, 'Данные строки не могут превышать более 30 символов'],
-    validate: {
-      validator: (v) => /[А-ЯЁ][а-яё]+/.test(v),
-      message: 'Имя доллжно быть на русском языке и начинаться с Большой буквы',
-    },
     default: 'Жак-Ив Кусто',
   },
   about: {
@@ -24,7 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => /^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i.test(v),
-      message: 'Имя доллжно быть на русском языке и начинаться с Большой буквы',
+      message: 'Cсылка должна начинаться с http, https, ftp',
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
@@ -32,7 +28,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minLength: 3,
     validate: {
       validator: (v) => validator.isEmail(v),
       message: 'Неправильный формат почты',
@@ -40,10 +35,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Минимум 8 символов'],
-    validate: {
-      validator: (v) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/.test(v),
-    },
+    required: true,
     select: false,
   },
 });

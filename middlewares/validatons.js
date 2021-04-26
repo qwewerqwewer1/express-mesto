@@ -1,4 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
 
 const validateSignIn = celebrate({
   body: Joi.object().keys({
@@ -72,7 +73,7 @@ const validateGetCards = celebrate({
 const validatePostCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().min(2),
+    link: validator.isUrl({ require_protocol: true })
   }),
   headers: Joi.object().keys({
     'content-type': Joi.string().valid('application/json').required(),

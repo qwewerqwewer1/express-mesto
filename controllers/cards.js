@@ -23,9 +23,6 @@ module.exports.postCard = (req, res, next) => {
 };
 
 module.exports.getCardById = (req, res, next) => {
-  // Я не знаю почему, но метод findByIdAndDelete при удалении чужой карты
-  // сначала писал who are you human?, а потом если просто еще разок попробывал
-  // удалить чужую карту, то удалял! Такая штука только при 2-х нажатиях пордяд на DELETE
   CardSchema.findById(req.params.cardId)
     .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
     .then((dataCard) => {
@@ -33,7 +30,7 @@ module.exports.getCardById = (req, res, next) => {
         dataCard.delete();
         res.status(200).send({ message: 'Карточка удалена!' });
       } else {
-        res.status(418).send({ message: 'who are you human?' });
+        res.status(403).send({ message: 'who are you human?' });
       }
     })
     .catch((err) => {
@@ -67,7 +64,7 @@ module.exports.removeLike = (req, res, next) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .orFail(new BadRequestError('Данные некорректны!'))
+    .orFail(new NotFoundError('Данные некорректны!'))
     .then((dataLike) => res.status(200).send(dataLike))
     .catch((err) => {
       if (err.name === 'CastError') {
