@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Ссылка на карточку'],
     validate: {
-      validator: (v) => validator.isUrl(v, { require_protocol: true })
+      validator: (v) => validator.isURL(v, { require_protocol: true })
     }
   },
   owner: {

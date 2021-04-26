@@ -1,6 +1,8 @@
 const CardSchema = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
+const Forbidden = require('../errors/forbidden-error');
+const { ConnectionStates } = require('mongoose');
 
 module.exports.getCards = (req, res, next) => {
   CardSchema.find({})
@@ -30,7 +32,7 @@ module.exports.getCardById = (req, res, next) => {
         dataCard.delete();
         res.status(200).send({ message: 'Карточка удалена!' });
       } else {
-        res.status(403).send({ message: 'who are you human?' });
+        throw new Forbidden('Отказано в доступе, нет прав.');
       }
     })
     .catch((err) => {

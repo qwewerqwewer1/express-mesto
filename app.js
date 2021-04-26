@@ -36,7 +36,10 @@ const router = require('./routes');
 const { errorHandler } = require('./middlewares/error-handler');
 // NPM WINSTON {Loggers}
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-
+// VALIDATIONS
+const {
+  validateSignIn, validateSignUp,
+} = require('../middlewares/validatons');
 // DATABASE MONGO ↓
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -61,8 +64,8 @@ app.get('/crash-test', () => {
 });
 
 // ROUTES ↓
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateSignIn, login);
+app.post('/signup', validateSignUp, createUser);
 // ROUTES ↓
 app.use(auth);
 // ROUTES ↓
