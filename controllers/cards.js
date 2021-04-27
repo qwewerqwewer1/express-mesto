@@ -2,7 +2,6 @@ const CardSchema = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 const Forbidden = require('../errors/forbidden-error');
-const { ConnectionStates } = require('mongoose');
 
 module.exports.getCards = (req, res, next) => {
   CardSchema.find({})
