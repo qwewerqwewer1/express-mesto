@@ -55,7 +55,12 @@ const validateUpdateInfoUser = celebrate({
 
 const validateUpdateAvatarUser = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
+    link: Joi.string().custom((value, helpers) => {
+      if (validator.isURL(value, { require_protocol: true })) {
+        return value;
+      }
+      return helpers.message('Поле "avatar" должно быть валидным url-адресом');
+    }),
   }),
   headers: Joi.object().keys({
     'content-type': Joi.string().valid('application/json').required(),
@@ -73,9 +78,12 @@ const validateGetCards = celebrate({
 const validatePostCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom((value) => {
-      validator.isURL(value, { require_protocol: true })
-    })
+    link: Joi.string().custom((value, helpers) => {
+      if (validator.isURL(value, { require_protocol: true })) {
+        return value;
+      }
+      return helpers.message('Поле "link" должно быть валидным url-адресом');
+    }),
   }),
   headers: Joi.object().keys({
     'content-type': Joi.string().valid('application/json').required(),
