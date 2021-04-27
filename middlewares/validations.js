@@ -55,7 +55,7 @@ const validateUpdateInfoUser = celebrate({
 
 const validateUpdateAvatarUser = celebrate({
   body: Joi.object().keys({
-    link: Joi.string().custom((value, helpers) => {
+    avatar: Joi.string().custom((value, helpers) => {
       if (validator.isURL(value, { require_protocol: true })) {
         return value;
       }
